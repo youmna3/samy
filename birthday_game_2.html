@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+  <title>Happy Birthday Adventure!</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Baloo+2:wght@500;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --pink: #FF6FA5;
+      --pink-dark: #E14F86;
+      --yellow: #FFD23F;
+      --sky: #6FD8FF;
+      --grass: #6BCB77;
+      --plum: #2D1B4E;
+      --cream: #FFF8EC;
+      --white: #FFFFFF;
+      --shadow: rgba(45, 27, 78, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: linear-gradient(160deg, #FFE3EE, #FFF3D6 55%, #E3F7FF);
+      font-family: 'Fredoka', sans-serif;
+      color: var(--plum);
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #stage {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 960/540;
+      max-height: 88vh;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 18px 40px var(--shadow), 0 0 0 6px var(--white) inset;
+      background: #bfeaff;
+    }
+
+    canvas#game {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 5%;
+      background: linear-gradient(160deg, rgba(255, 227, 238, 0.97), rgba(255, 243, 214, 0.97) 55%, rgba(227, 247, 255, 0.97));
+      gap: 14px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    h1.title {
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 800;
+      font-size: clamp(24px, 5.5vw, 46px);
+      color: var(--pink-dark);
+      margin: 0;
+      text-shadow: 2px 3px 0 var(--yellow);
+      line-height: 1.15;
+    }
+
+    p.sub {
+      font-size: clamp(13px, 2.2vw, 17px);
+      margin: 0;
+      max-width: 480px;
+      color: var(--plum);
+      opacity: 0.85;
+    }
+
+    .avatar-wrap {
+      position: relative;
+      width: clamp(86px, 16vw, 120px);
+      height: clamp(86px, 16vw, 120px);
+      border-radius: 50%;
+      background: var(--white);
+      border: 5px solid var(--yellow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 8px 18px var(--shadow);
+    }
+
+    .avatar-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .avatar-wrap svg {
+      width: 70%;
+      height: 70%;
+    }
+
+    .upload-btn {
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 600;
+      font-size: 13px;
+      background: var(--white);
+      color: var(--pink-dark);
+      border: 2px solid var(--pink);
+      border-radius: 999px;
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: transform .15s ease, background .15s ease;
+    }
+
+    .upload-btn:hover {
+      transform: translateY(-2px);
+      background: #FFF0F5;
+    }
+
+    input[type=file] {
+      display: none;
+    }
+
+    input[type=text] {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 15px;
+      padding: 9px 14px;
+      border-radius: 999px;
+      border: 2px solid var(--sky);
+      outline: none;
+      text-align: center;
+      width: min(80vw, 260px);
+      background: var(--white);
+    }
+
+    input[type=text]:focus {
+      border-color: var(--pink);
+    }
+
+    .big-btn {
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 700;
+      font-size: clamp(15px, 2.6vw, 19px);
+      color: var(--white);
+      background: linear-gradient(180deg, var(--pink), var(--pink-dark));
+      border: none;
+      border-radius: 999px;
+      padding: 13px 34px;
+      cursor: pointer;
+      box-shadow: 0 6px 0 #b13b66, 0 10px 18px var(--shadow);
+      transition: transform .12s ease;
+    }
+
+    .big-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #b13b66;
+    }
+
+    .big-btn.alt {
+      background: linear-gradient(180deg, #6FD8FF, #3DAEE0);
+      box-shadow: 0 6px 0 #2789ad, 0 10px 18px var(--shadow);
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    #hud {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      pointer-events: none;
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 700;
+      color: var(--white);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+      font-size: clamp(13px, 2.4vw, 18px);
+    }
+
+    #hud .pill {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(2px);
+      border-radius: 999px;
+      padding: 6px 14px;
+    }
+
+    #hud .pill.pulse {
+      animation: pulsePop 0.4s ease;
+    }
+
+    @keyframes pulsePop {
+      0% {
+        transform: scale(1);
+      }
+
+      40% {
+        transform: scale(1.35);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    #touch {
+      position: absolute;
+      bottom: 14px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 16px;
+      pointer-events: none;
+    }
+
+    #touch .pad {
+      display: flex;
+      gap: 10px;
+      pointer-events: auto;
+    }
+
+    #touch button {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255, 255, 255, 0.55);
+      font-size: 24px;
+      color: var(--plum);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      font-family: 'Fredoka', sans-serif;
+      user-select: none;
+    }
+
+    #touch button:active {
+      background: rgba(255, 255, 255, 0.85);
+    }
+
+    .hint {
+      font-size: 12px;
+      opacity: 0.7;
+      max-width: 380px;
+    }
+
+    .stat-row {
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 700;
+      font-size: clamp(15px, 3vw, 20px);
+      color: var(--pink-dark);
+    }
+
+    textarea {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 13px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 2px solid var(--sky);
+      outline: none;
+      width: 100%;
+      resize: vertical;
+      min-height: 64px;
+      background: var(--white);
+      line-height: 1.4;
+    }
+
+    textarea:focus {
+      border-color: var(--pink);
+    }
+
+    details#customizePanel {
+      width: min(90vw, 420px);
+      background: rgba(255, 255, 255, 0.55);
+      border-radius: 14px;
+      padding: 8px 14px;
+      text-align: left;
+    }
+
+    details#customizePanel summary {
+      cursor: pointer;
+      font-family: 'Baloo 2', sans-serif;
+      font-weight: 700;
+      color: var(--pink-dark);
+      font-size: 14px;
+      padding: 4px 0;
+    }
+
+    .field-block {
+      margin: 8px 0;
+    }
+
+    .field-block label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--plum);
+      opacity: 0.8;
+      margin-bottom: 3px;
+    }
+
+    .avatar-row {
+      display: flex;
+      gap: 18px;
+      align-items: flex-end;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .avatar-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .avatar-col span.label {
+      font-size: 11px;
+      opacity: 0.7;
+      font-weight: 600;
+    }
+
+    .avatar-wrap.small {
+      width: clamp(60px, 12vw, 80px);
+      height: clamp(60px, 12vw, 80px);
+      border-color: var(--sky);
+    }
+
+    footer.credit {
+      position: absolute;
+      bottom: 6px;
+      width: 100%;
+      text-align: center;
+      font-size: 10px;
+      color: var(--plum);
+      opacity: 0.4;
+    }
+
+    @media (max-width:600px) {
+      #touch button {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div id="stage">
+      <canvas id="game" width="960" height="540"></canvas>
+
+      <div id="hud" class="hidden">
+        <div class="pill" id="hudLevel">Level 1</div>
+        <div class="pill" id="hudHearts">💗 0/0</div>
+      </div>
+
+      <div id="touch" class="hidden">
+        <div class="pad">
+          <button id="btnLeft">◀</button>
+          <button id="btnRight">▶</button>
+        </div>
+        <div class="pad">
+          <button id="btnJump">⤴</button>
+        </div>
+      </div>
+
+      <!-- START SCREEN -->
+      <div id="screenStart" class="overlay">
+        <h1 class="title">A Birthday Quest 🎂</h1>
+        <p class="sub">Three levels, three reasons to smile: count every thing you love about him, then everything that
+          makes you happy he does, then watch your wishes for "us" come true — ending with a little surprise.</p>
+
+        <div class="avatar-row">
+          <div class="avatar-col">
+            <div class="avatar-wrap" id="avatarWrap">
+              <svg viewBox="0 0 100 100">
+                <circle cx="50" cy="38" r="22" fill="#FFD9A8" />
+                <circle cx="40" cy="36" r="3" fill="#2D1B4E" />
+                <circle cx="60" cy="36" r="3" fill="#2D1B4E" />
+                <path d="M38 48 Q50 58 62 48" stroke="#2D1B4E" stroke-width="3" fill="none" stroke-linecap="round" />
+              </svg>
+            </div>
+            <label class="upload-btn" for="photoInput">His photo 📷</label>
+            <input type="file" id="photoInput" accept="image/*">
+          </div>
+          <div class="avatar-col">
+            <div class="avatar-wrap small" id="herAvatarWrap">
+              <svg viewBox="0 0 100 100">
+                <circle cx="50" cy="38" r="22" fill="#FFE3C4" />
+                <circle cx="40" cy="36" r="3" fill="#2D1B4E" />
+                <circle cx="60" cy="36" r="3" fill="#2D1B4E" />
+                <path d="M38 48 Q50 56 62 48" stroke="#2D1B4E" stroke-width="3" fill="none" stroke-linecap="round" />
+                <path d="M28 30 Q50 6 72 30" stroke="#5A3825" stroke-width="10" fill="none" />
+              </svg>
+            </div>
+            <label class="upload-btn" for="herPhotoInput">Your photo (optional)</label>
+            <input type="file" id="herPhotoInput" accept="image/*">
+          </div>
+        </div>
+
+        <input type="text" id="nameInput" placeholder="His name (e.g. Samy)" maxlength="18">
+
+        <details id="customizePanel">
+          <summary>💌 Personalize what each level reveals (optional — sweet defaults included)</summary>
+          <div class="field-block">
+            <label>Level 1 — Things I love about You (one per line)</label>
+            <textarea id="lines1">Your Smile
+              The way you make even boring days fun
+              How endlessly kind you are
+              How safe and at home I feel with you
+              The way your eyes light up about things you love
+              How you always show up for me
+              The way you talk about your passions
+              How you look at me when you think I'm not noticing
+              our calls that last for hours
+              How you appreciate everything I do for you </textarea>
+          </div>
+          <div class="field-block">
+            <label>Level 2 — Things that make me happy you do (one per line)</label>
+            <textarea id="lines2">Your Morning Text
+              You always check in on me
+              You remember the little things I say
+              You always want me to be happy
+              Your daily updates on how your day is going
+              Your way of making me feel special
+              You laugh at my jokes
+              Your reaction to my food
+              How you choose the perfect gift for me
+              Your morning calls</textarea>
+          </div>
+          <div class="field-block">
+            <label>Level 3 — Wishes for "us" (one per line)</label>
+            <textarea id="lines3">To stay best friends, not just partners
+              Growing old together
+              Traveling the world side by side
+              Building a home full of love
+              Raise our children with love and care
+              Late night talks under the stars
+              Adventures we haven't even dreamed of yet
+              Being your partner in everything
+              Be together through thick and thin
+              Always talk, fix things, and never let distance win
+              we become better people together</textarea>
+          </div>
+        </details>
+
+        <button class="big-btn" id="startBtn">Start the Quest →</button>
+        <p class="hint">Arrow keys / A & D to move, Space to jump &nbsp;•&nbsp; on mobile, use the on-screen buttons</p>
+      </div>
+
+      <!-- LEVEL COMPLETE SCREEN -->
+      <div id="screenLevelComplete" class="overlay hidden">
+        <h1 class="title" id="lcTitle">Level Complete! 🎉</h1>
+        <p class="stat-row" id="lcStats">Hearts collected: 0/0</p>
+        <div id="lcRecap"
+          style="max-width:380px;max-height:140px;overflow-y:auto;background:rgba(255,255,255,0.6);border-radius:12px;padding:8px 14px;font-size:13px;text-align:left;">
+        </div>
+        <button class="big-btn" id="nextLevelBtn">Next Level →</button>
+      </div>
+
+      <!-- FINAL WIN SCREEN -->
+      <div id="screenWin" class="overlay hidden">
+        <h1 class="title" id="winTitle">Happy Birthday!! 🎈</h1>
+        <canvas id="finaleCanvas" width="320" height="190"
+          style="width:min(86vw,320px);height:auto;border-radius:14px;background:linear-gradient(180deg,#FFD9EC,#FFF3D6);box-shadow:0 6px 16px var(--shadow);"></canvas>
+        <p class="sub" id="winMessage">You made it through every level — what a perfect way to celebrate you!</p>
+        <p class="stat-row" id="winStats">Total things collected: 0/0</p>
+        <div id="loveMeterTrack"
+          style="width:min(80vw,300px);height:16px;background:#fff;border-radius:999px;overflow:hidden;box-shadow:0 2px 6px var(--shadow);">
+          <div id="loveMeterFill"
+            style="height:100%;width:0%;background:linear-gradient(90deg,var(--pink),var(--yellow));transition:width 1.2s ease;">
+          </div>
+        </div>
+        <p class="hint" id="loveMeterLabel">Love meter loading…</p>
+        <div class="row">
+          <button class="big-btn" id="replayBtn">Play Again 🔁</button>
+        </div>
+      </div>
+
+      <footer class="credit">made with love, just for you 💌</footer>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      const canvas = document.getElementById('game');
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width, H = canvas.height;
+      const GROUND_Y = 460;
+      const GRAVITY = 0.55;
+      const MOVE_SPEED = 4.3;
+      const JUMP_VEL = -12.6;
+
+      /* ---------- palette per level ---------- */
+      const THEMES = [
+        { name: "Things I Love About You", subtitle: "Meadow of Affection", skyTop: "#9be8ff", skyBottom: "#d6f7ff", hill: "#7fd99a", hill2: "#6BCB77", ground: "#8a5a3b", groundTop: "#6BCB77", accent: "#FFD23F", obstacleName: "Sir Pouts-a-Lot" },
+        { name: "Things That Make Me Happy", subtitle: "Sugar, Streamers & Slapstick", skyTop: "#6fc7ff", skyBottom: "#bfe9ff", hill: "#9fdcff", hill2: "#7fc4ee", ground: "#5f7fae", groundTop: "#bfe9ff", accent: "#FF6FA5", obstacleName: "Negative Nancy" },
+        { name: "Wishes For Us", subtitle: "Make a Wish on Us", skyTop: "#241b4e", skyBottom: "#5a3a7a", hill: "#3a2a66", hill2: "#2D1B4E", ground: "#3a2a66", groundTop: "#FFD23F", accent: "#FF6FA5", obstacleName: "Gloomy Drizzle" }
+      ];
+
+      /* ---------- funny + romantic flavor text (fallback if user leaves a box empty) ---------- */
+      const DEFAULT_LINES = [
+        ["Your laugh that makes everyone else laugh too", "The way you make even boring days fun", "How endlessly kind you are", "Your hugs that fix everything", "The way your eyes light up about things you love"],
+        ["You make me coffee every morning", "You always check in on me", "You remember the little things I say", "You dance with me in the kitchen", "You let me steal your hoodies"],
+        ["Growing old together", "Traveling the world side by side", "Building a home full of love", "Late night talks under the stars", "Forever starts now"]
+      ];
+      const OBSTACLE_QUIPS = [
+        ["Sir Pouts-a-Lot: 'Hmph. Too much love in here.'", "Sir Pouts-a-Lot: 'Ugh, get a room, you two.'"],
+        ["Negative Nancy: 'Lower the cuteness, please!'", "Negative Nancy: 'My one job is to rain on this.'"],
+        ["Gloomy Drizzle: 'Even I can't dim that sparkle.'", "Gloomy Drizzle: 'Fine, you two ARE cute. Happy?'"]
+      ];
+
+      /* ---------- helper: build a level ---------- */
+      function seg(a, b) { return { x1: a, x2: b }; }
+      function plat(x, y, w, h) { return { x, y, w, h }; }
+      function heart(x, y, type) { return { x, y, r: 11, got: false, type: type || 'heart' }; }
+      function cloudObs(x, y, minX, maxX, speed) { return { x, y, minX, maxX, speed, dir: 1, baseY: y }; }
+
+      const LEVELS = [
+        { // Level 1 - Count Every Heart (gentle intro, all hearts, big counter)
+          length: 2500,
+          segments: [seg(0, 520), seg(580, 1020), seg(1080, 1520), seg(1580, 2020), seg(2080, 2500)],
+          platforms: [plat(640, 360, 110, 18), plat(900, 300, 110, 18), plat(1150, 370, 100, 18), plat(1640, 330, 120, 18), plat(1900, 260, 100, 18)],
+          hearts: [heart(120, 400), heart(250, 400), heart(660, 310), heart(920, 250), heart(1170, 320), heart(1350, 420), heart(1660, 280), heart(1920, 210), heart(2150, 400), heart(2300, 400)],
+          obstacles: [cloudObs(800, 408, 750, 1000, 1.6), cloudObs(1750, 260, 1640, 1900, 1.4)],
+          goal: { x: 2440, y: GROUND_Y }
+        },
+        { // Level 2 - Cuddle Carnival (mixed cute collectibles: hearts, cupcakes, love letters)
+          length: 2900,
+          segments: [seg(0, 360), seg(900, 1180), seg(1700, 1980), seg(2500, 2900)],
+          platforms: [plat(420, 400, 90, 16), plat(560, 330, 90, 16), plat(700, 400, 90, 16), plat(1230, 360, 100, 16), plat(1400, 290, 100, 16), plat(1560, 360, 100, 16), plat(2020, 420, 100, 16), plat(2180, 330, 100, 16), plat(2340, 250, 100, 16)],
+          hearts: [heart(440, 360, 'cupcake'), heart(580, 290, 'heart'), heart(720, 360, 'letter'), heart(960, 310, 'cupcake'), heart(1250, 320, 'heart'), heart(1420, 250, 'letter'), heart(1580, 320, 'cupcake'), heart(2040, 380, 'heart'), heart(2200, 290, 'letter'), heart(2360, 210, 'cupcake'), heart(2620, 400, 'heart')],
+          obstacles: [cloudObs(500, 300, 420, 790, 1.8), cloudObs(1300, 250, 1230, 1660, 2.0), cloudObs(2100, 290, 2020, 2440, 1.7)],
+          goal: { x: 2840, y: GROUND_Y }
+        },
+        { // Level 3 - Starlight Wish (finale, night theme, hearts + wish stars)
+          length: 3100,
+          segments: [seg(0, 300), seg(760, 1040), seg(1400, 1660), seg(2100, 2380), seg(2700, 3100)],
+          platforms: [plat(360, 400, 90, 16), plat(500, 330, 90, 16), plat(640, 260, 90, 16), plat(1100, 380, 100, 16), plat(1260, 300, 100, 16), plat(1760, 420, 100, 16), plat(1920, 340, 100, 16), plat(2080, 260, 100, 16), plat(2440, 380, 100, 16), plat(2600, 300, 100, 16)],
+          hearts: [heart(380, 360, 'star'), heart(520, 290, 'heart'), heart(660, 220, 'star'), heart(800, 260, 'heart'), heart(1120, 340, 'star'), heart(1280, 260, 'heart'), heart(1780, 380, 'star'), heart(1940, 300, 'heart'), heart(2100, 220, 'star'), heart(2460, 340, 'heart'), heart(2620, 260, 'star'), heart(2900, 400, 'heart')],
+          obstacles: [cloudObs(420, 300, 360, 730, 2.0), cloudObs(1200, 250, 1100, 1620, 2.2), cloudObs(2000, 300, 1760, 2380, 2.1), cloudObs(2550, 260, 2440, 2680, 2.0)],
+          goal: { x: 3040, y: GROUND_Y }
+        }
+      ];
+
+      /* ---------- state ---------- */
+      let state = {
+        screen: 'start',
+        levelIndex: 0,
+        faceImg: null,
+        herFaceImg: null,
+        playerName: '',
+        totalHeartsCollected: 0,
+        totalHeartsAll: 0,
+        lines: [null, null, null],
+        collectedThisLevel: []
+      };
+
+      function getLinePool(idx) {
+        const custom = state.lines[idx];
+        return (custom && custom.length) ? custom : DEFAULT_LINES[idx];
+      }
+
+      let level = null;
+      let player, camera, keys, checkpointX, hitTimer, time;
+      let bubble = { text: '', timer: 0, x: 0, y: 0 };
+      let captionCursor = 0;
+      let quipCursor = 0;
+
+      function totalHeartsInLevel(l) { return l.hearts.length; }
+
+      function loadLevel(idx) {
+        // deep-ish copy so replays reset got flags
+        const src = LEVELS[idx];
+        level = {
+          length: src.length,
+          segments: src.segments,
+          platforms: src.platforms,
+          hearts: src.hearts.map(h => ({ ...h, got: false })),
+          obstacles: src.obstacles.map(o => ({ ...o, dir: 1 })),
+          goal: src.goal,
+          theme: THEMES[idx]
+        };
+        player = { x: 60, y: GROUND_Y - 60, w: 38, h: 60, vx: 0, vy: 0, onGround: false, facing: 1, invul: 0, walk: 0 };
+        camera = { x: 0 };
+        checkpointX = 60;
+        hitTimer = 0;
+        time = 0;
+        bubble = { text: '', timer: 0, x: 0, y: 0 };
+        captionCursor = 0; quipCursor = 0;
+        state.collectedThisLevel = [];
+        document.getElementById('hudLevel').textContent = `Lvl ${idx + 1}: ${level.theme.name}`;
+        updateHeartsHud();
+      }
+
+      const TYPE_EMOJI = { heart: '💗', cupcake: '🧁', letter: '💌', star: '⭐' };
+      function updateHeartsHud(pulse) {
+        const got = level.hearts.filter(h => h.got).length;
+        const types = [...new Set(level.hearts.map(h => h.type))];
+        const icon = types.length > 1 ? types.map(t => TYPE_EMOJI[t]).join('') : TYPE_EMOJI[types[0]];
+        const hudHearts = document.getElementById('hudHearts');
+        hudHearts.textContent = `${icon} ${got}/${level.hearts.length}`;
+        if (pulse) {
+          hudHearts.classList.remove('pulse'); void hudHearts.offsetWidth; hudHearts.classList.add('pulse');
+        }
+      }
+
+      /* ---------- input ---------- */
+      keys = { left: false, right: false, jump: false };
+      window.addEventListener('keydown', e => {
+        if (['ArrowLeft', 'a', 'A'].includes(e.key)) keys.left = true;
+        if (['ArrowRight', 'd', 'D'].includes(e.key)) keys.right = true;
+        if ([' ', 'ArrowUp', 'w', 'W'].includes(e.key)) { keys.jump = true; e.preventDefault(); }
+      });
+      window.addEventListener('keyup', e => {
+        if (['ArrowLeft', 'a', 'A'].includes(e.key)) keys.left = false;
+        if (['ArrowRight', 'd', 'D'].includes(e.key)) keys.right = false;
+        if ([' ', 'ArrowUp', 'w', 'W'].includes(e.key)) keys.jump = false;
+      });
+
+      function bindHold(el, onDown, onUp) {
+        el.addEventListener('touchstart', e => { e.preventDefault(); onDown(); });
+        el.addEventListener('touchend', e => { e.preventDefault(); onUp(); });
+        el.addEventListener('mousedown', onDown);
+        el.addEventListener('mouseup', onUp);
+        el.addEventListener('mouseleave', onUp);
+      }
+      bindHold(document.getElementById('btnLeft'), () => keys.left = true, () => keys.left = false);
+      bindHold(document.getElementById('btnRight'), () => keys.right = true, () => keys.right = false);
+      bindHold(document.getElementById('btnJump'), () => keys.jump = true, () => keys.jump = false);
+
+      /* ---------- photo upload ---------- */
+      const photoInput = document.getElementById('photoInput');
+      const avatarWrap = document.getElementById('avatarWrap');
+      photoInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+          const img = new Image();
+          img.onload = function () {
+            state.faceImg = img;
+            avatarWrap.innerHTML = '';
+            const imgEl = document.createElement('img');
+            imgEl.src = ev.target.result;
+            avatarWrap.appendChild(imgEl);
+          };
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+
+      const herPhotoInput = document.getElementById('herPhotoInput');
+      const herAvatarWrap = document.getElementById('herAvatarWrap');
+      herPhotoInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+          const img = new Image();
+          img.onload = function () {
+            state.herFaceImg = img;
+            herAvatarWrap.innerHTML = '';
+            const imgEl = document.createElement('img');
+            imgEl.src = ev.target.result;
+            herAvatarWrap.appendChild(imgEl);
+          };
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+
+      /* ---------- screen switching ---------- */
+      function showScreen(name) {
+        state.screen = name;
+        ['screenStart', 'screenLevelComplete', 'screenWin'].forEach(id => {
+          document.getElementById(id).classList.add('hidden');
+        });
+        const hud = document.getElementById('hud');
+        const touch = document.getElementById('touch');
+        if (name === 'play') {
+          hud.classList.remove('hidden');
+          touch.classList.remove('hidden');
+        } else {
+          hud.classList.add('hidden');
+          touch.classList.add('hidden');
+          document.getElementById('screen' + name.charAt(0).toUpperCase() + name.slice(1)).classList.remove('hidden');
+        }
+      }
+
+      document.getElementById('startBtn').addEventListener('click', () => {
+        const nameVal = document.getElementById('nameInput').value.trim();
+        state.playerName = nameVal || 'You';
+        state.totalHeartsCollected = 0;
+        state.totalHeartsAll = LEVELS.reduce((s, l) => s + l.hearts.length, 0);
+        state.levelIndex = 0;
+        ['lines1', 'lines2', 'lines3'].forEach((id, i) => {
+          const raw = document.getElementById(id).value;
+          const arr = raw.split('\n').map(s => s.trim()).filter(Boolean);
+          state.lines[i] = arr;
+        });
+        loadLevel(0);
+        showScreen('play');
+      });
+
+      document.getElementById('nextLevelBtn').addEventListener('click', () => {
+        state.levelIndex++;
+        if (state.levelIndex >= LEVELS.length) {
+          finishGame();
+        } else {
+          loadLevel(state.levelIndex);
+          showScreen('play');
+        }
+      });
+
+      document.getElementById('replayBtn').addEventListener('click', () => {
+        state.totalHeartsCollected = 0;
+        state.levelIndex = 0;
+        loadLevel(0);
+        showScreen('play');
+      });
+
+      const WIN_MESSAGES = [
+        "You beat the meadow, survived the carnival, and out-sparkled the stars. Officially the most lovable person alive — happy birthday!",
+        "Every heart, cupcake and wish out there has nothing on the real thing: you. Happy birthday, gorgeous.",
+        "Sir Pouts-a-Lot, Negative Nancy, and Gloomy Drizzle all agree (reluctantly): you're impossible not to adore. Happy birthday!"
+      ];
+
+      function finishGame() {
+        document.getElementById('winTitle').textContent = `Happy Birthday, ${state.playerName}!! 🎈`;
+        document.getElementById('winMessage').textContent = WIN_MESSAGES[Math.floor(Math.random() * WIN_MESSAGES.length)];
+        document.getElementById('winStats').textContent = `Total things collected: ${state.totalHeartsCollected}/${state.totalHeartsAll}`;
+        const pct = state.totalHeartsAll ? Math.round(100 * state.totalHeartsCollected / state.totalHeartsAll) : 100;
+        const fill = document.getElementById('loveMeterFill');
+        fill.style.width = '0%';
+        setTimeout(() => { fill.style.width = pct + '%'; }, 150);
+        const label = document.getElementById('loveMeterLabel');
+        label.textContent = pct >= 90 ? `Love meter: ${pct}% — basically maxed out, just like my feelings for you.`
+          : pct >= 50 ? `Love meter: ${pct}% — and climbing every day.`
+            : `Love meter: ${pct}% — don't worry, the rest was never quantifiable anyway.`;
+        showScreen('win');
+        drawFinaleScene();
+      }
+
+      const LEVEL_COMPLETE_LINES = [
+        "Hearts: counted. Smitten-ness: confirmed.",
+        "Negative Nancy never stood a chance against you.",
+        "Wish granted — you cleared the whole sky."
+      ];
+
+      function completeLevel() {
+        const got = level.hearts.filter(h => h.got).length;
+        state.totalHeartsCollected += got;
+        const isLast = state.levelIndex >= LEVELS.length - 1;
+        document.getElementById('lcTitle').textContent = isLast ? `Final Level Complete! 🎂` : `Level Complete! 🎉`;
+        document.getElementById('lcStats').textContent = `Collected: ${got}/${level.hearts.length} — ${LEVEL_COMPLETE_LINES[state.levelIndex]}`;
+        const recap = document.getElementById('lcRecap');
+        if (state.collectedThisLevel.length) {
+          recap.innerHTML = state.collectedThisLevel.map(t => `<div style="padding:3px 0;">💗 ${escapeHtml(t)}</div>`).join('');
+        } else {
+          recap.innerHTML = `<div style="opacity:0.6;">No items collected this round — that's okay, you can still keep going!</div>`;
+        }
+        document.getElementById('nextLevelBtn').textContent = isLast ? 'See the Surprise →' : 'Next Level →';
+        showScreen('levelComplete');
+      }
+
+      function escapeHtml(s) {
+        const d = document.createElement('div');
+        d.textContent = s;
+        return d.innerHTML;
+      }
+
+      /* ---------- physics / update ---------- */
+      function groundAt(x) {
+        for (const s of level.segments) {
+          if (x >= s.x1 && x <= s.x2) return GROUND_Y;
+        }
+        return null;
+      }
+
+      function groundSegmentAt(x) {
+        for (const s of level.segments) {
+          if (x >= s.x1 && x <= s.x2) return s;
+        }
+        return null;
+      }
+
+      function update() {
+        if (state.screen !== 'play') return;
+        time++;
+
+        // horizontal movement
+        if (keys.left) { player.vx = -MOVE_SPEED; player.facing = -1; }
+        else if (keys.right) { player.vx = MOVE_SPEED; player.facing = 1; }
+        else { player.vx = 0; }
+
+        if (keys.jump && player.onGround) {
+          player.vy = JUMP_VEL;
+          player.onGround = false;
+        }
+
+        player.vy += GRAVITY;
+        if (player.vy > 14) player.vy = 14;
+
+        let nx = player.x + player.vx;
+        let ny = player.y + player.vy;
+        nx = Math.max(0, Math.min(level.length - player.w, nx));
+
+        // platform collision (only when falling, landing on top)
+        player.onGround = false;
+        const feetY = ny + player.h;
+        const prevFeetY = player.y + player.h;
+
+        // ground segments
+        const gY = groundAt(nx + player.w / 2);
+        if (gY !== null && feetY >= gY && prevFeetY <= gY + 1 && player.vy >= 0) {
+          ny = gY - player.h;
+          player.vy = 0;
+          player.onGround = true;
+          const gSeg = groundSegmentAt(nx + player.w / 2);
+          if (gSeg) {
+            checkpointX = Math.max(gSeg.x1 + 8, Math.min(gSeg.x2 - 8, nx - 40));
+          }
+        }
+
+        // platforms
+        for (const p of level.platforms) {
+          const px1 = p.x, px2 = p.x + p.w, py = p.y;
+          if (nx + player.w > px1 && nx < px2) {
+            if (feetY >= py && prevFeetY <= py + 1 && player.vy >= 0) {
+              ny = py - player.h;
+              player.vy = 0;
+              player.onGround = true;
+              // Note: platforms can float above pits, so we don't set the ground
+              // checkpoint here — only solid ground segments are safe respawn points.
+            }
+          }
+        }
+
+        // fell into a pit -> respawn near checkpoint
+        if (ny > H + 80) {
+          // Safety net: if the stored checkpoint somehow isn't over solid ground
+          // (shouldn't happen now, but just in case), fall back to the level start.
+          if (!groundSegmentAt(checkpointX + player.w / 2)) {
+            checkpointX = 60;
+          }
+          nx = checkpointX;
+          ny = GROUND_Y - player.h - 4;
+          player.vy = 0;
+          player.vx = 0;
+          player.invul = 0;
+        }
+
+        player.x = nx;
+        player.y = ny;
+        player.walk += Math.abs(player.vx) > 0 ? 1 : 0;
+
+        if (player.invul > 0) player.invul--;
+
+        // collectible pickup
+        for (const h of level.hearts) {
+          if (h.got) continue;
+          const dx = (player.x + player.w / 2) - h.x;
+          const dy = (player.y + player.h / 2) - h.y;
+          if (Math.sqrt(dx * dx + dy * dy) < h.r + 22) {
+            h.got = true;
+            const gotCount = level.hearts.filter(x => x.got).length;
+            updateHeartsHud(true);
+            const pool = getLinePool(state.levelIndex);
+            let line = pool[captionCursor % pool.length];
+            captionCursor++;
+            line = line.replace('{n}', gotCount);
+            bubble = { text: line, timer: 95, x: player.x + player.w / 2, y: player.y - 18 };
+            state.collectedThisLevel.push(line);
+          }
+        }
+
+        // obstacles (patrol + collision = gentle bump back, no fail state)
+        for (const o of level.obstacles) {
+          o.x += o.speed * o.dir;
+          if (o.x > o.maxX) o.dir = -1;
+          if (o.x < o.minX) o.dir = 1;
+          o.y = o.baseY + Math.sin(time / 20 + o.x) * 6;
+
+          if (player.invul <= 0) {
+            const ow = 46, oh = 34;
+            if (player.x < o.x + ow && player.x + player.w > o.x && player.y < o.y + oh && player.y + player.h > o.y) {
+              player.vx = (player.x < o.x) ? -6 : 6;
+              player.vy = -7;
+              player.invul = 50;
+              const quips = OBSTACLE_QUIPS[state.levelIndex];
+              const q = quips[quipCursor % quips.length];
+              quipCursor++;
+              bubble = { text: q, timer: 95, x: o.x, y: o.y - 34 };
+            }
+          }
+        }
+
+        // goal check
+        if (player.x + player.w / 2 >= level.goal.x) {
+          completeLevel();
+        }
+
+        // camera
+        camera.x = Math.max(0, Math.min(level.length - W, player.x - W / 3));
+
+        if (bubble.timer > 0) bubble.timer--;
+      }
+
+      /* ---------- drawing ---------- */
+      function drawBackground() {
+        const th = level.theme;
+        const g = ctx.createLinearGradient(0, 0, 0, H);
+        g.addColorStop(0, th.skyTop);
+        g.addColorStop(1, th.skyBottom);
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, W, H);
+
+        // stars for night level
+        if (state.levelIndex === 2) {
+          ctx.fillStyle = "rgba(255,255,255,0.8)";
+          for (let i = 0; i < 40; i++) {
+            const sx = (i * 137 - camera.x * 0.2) % (W + 40);
+            const sy = (i * 73) % 260 + 10;
+            const tw = 0.5 + 0.5 * Math.sin(time / 20 + i);
+            ctx.globalAlpha = 0.4 + 0.6 * tw;
+            ctx.beginPath();
+            ctx.arc(((sx % (W + 40)) + W + 40) % (W + 40) - 20, sy, 1.6, 0, 7);
+            ctx.fill();
+          }
+          ctx.globalAlpha = 1;
+        }
+
+        // parallax hills
+        ctx.fillStyle = th.hill;
+        drawHillRow(0.35, 360, 70);
+        ctx.fillStyle = th.hill2;
+        drawHillRow(0.55, 400, 50);
+
+        // parallax clouds (decorative, not the obstacle clouds)
+        ctx.fillStyle = "rgba(255,255,255,0.85)";
+        for (let i = 0; i < 6; i++) {
+          const bx = ((i * 420 - camera.x * 0.15) % (W + 300)) - 150;
+          drawPuff(bx, 60 + (i % 3) * 40, 30);
+        }
+      }
+
+      function drawHillRow(parallax, y, amp) {
+        const offset = -camera.x * parallax;
+        ctx.beginPath();
+        ctx.moveTo(0, H);
+        for (let x = 0; x <= W + 60; x += 60) {
+          const hy = y + Math.sin((x + offset) / 140) * amp;
+          ctx.lineTo(x, hy);
+        }
+        ctx.lineTo(W, H);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      function drawPuff(x, y, r) {
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, 7);
+        ctx.arc(x + r * 0.8, y + 5, r * 0.7, 0, 7);
+        ctx.arc(x - r * 0.8, y + 5, r * 0.7, 0, 7);
+        ctx.fill();
+      }
+
+      function drawBee(x, y, t) {
+        const flap = Math.sin(t / 4) * 4;
+        ctx.fillStyle = "rgba(255,255,255,0.7)";
+        ctx.beginPath(); ctx.ellipse(x - 3, y - 2 + flap, 5, 3, 0.4, 0, 7); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(x + 3, y - 2 - flap, 5, 3, -0.4, 0, 7); ctx.fill();
+        ctx.fillStyle = "#FFD23F";
+        ctx.beginPath(); ctx.ellipse(x, y, 6, 4.5, 0, 0, 7); ctx.fill();
+        ctx.fillStyle = "#2D1B4E";
+        ctx.fillRect(x - 5, y - 3, 2.5, 6);
+        ctx.fillRect(x, y - 3, 2.5, 6);
+      }
+
+      function drawFlower(x, y, c1, c2) {
+        for (let i = 0; i < 5; i++) {
+          const ang = i * (Math.PI * 2 / 5);
+          ctx.fillStyle = c1;
+          ctx.beginPath();
+          ctx.ellipse(x + Math.cos(ang) * 4, y + Math.sin(ang) * 4, 3.5, 2.5, ang, 0, 7);
+          ctx.fill();
+        }
+        ctx.fillStyle = c2;
+        ctx.beginPath(); ctx.arc(x, y, 2.6, 0, 7); ctx.fill();
+      }
+
+      function drawLevel1Decor() {
+        ctx.save();
+        for (let i = 0; i < 5; i++) {
+          const bx = (((i * 500 - camera.x * 0.5) % (W + 200)) + (W + 200)) % (W + 200) - 100;
+          const by = 130 + (i % 3) * 55 + Math.sin(time / 30 + i * 2) * 18;
+          drawBee(bx, by, time + i * 20);
+        }
+        for (let i = 0; i < 14; i++) {
+          const fx = (((i * 220 - camera.x * 0.55) % (W + 120)) + (W + 120)) % (W + 120) - 60;
+          const fy = 392 + (i % 2) * 8;
+          const cols = [["#fff", "#FFD23F"], ["#FFD9F0", "#FF6FA5"], ["#fff", "#FFD23F"]];
+          const c = cols[i % cols.length];
+          drawFlower(fx, fy, c[0], c[1]);
+        }
+        ctx.restore();
+      }
+
+      function drawBunting() {
+        const offset = -camera.x * 0.4;
+        const colors = ["#FF6FA5", "#FFD23F", "#6FD8FF", "#FF9ECF"];
+        ctx.save();
+        ctx.strokeStyle = "rgba(255,255,255,0.6)";
+        ctx.lineWidth = 2;
+        for (let row = 0; row < 2; row++) {
+          const baseY = 70 + row * 26;
+          ctx.beginPath();
+          for (let x = -40; x <= W + 80; x += 2) {
+            const yy = baseY + Math.sin((x + offset + row * 80) / 160) * 14;
+            if (x === -40) ctx.moveTo(x, yy); else ctx.lineTo(x, yy);
+          }
+          ctx.stroke();
+          let ci = 0;
+          for (let x = 0; x <= W + 40; x += 34) {
+            const wx = x;
+            const yy = baseY + Math.sin((wx + offset + row * 80) / 160) * 14;
+            ctx.fillStyle = colors[(ci + row) % colors.length]; ci++;
+            ctx.beginPath();
+            ctx.moveTo(wx - 9, yy); ctx.lineTo(wx + 9, yy); ctx.lineTo(wx, yy + 16);
+            ctx.closePath(); ctx.fill();
+          }
+        }
+        ctx.restore();
+      }
+
+      function drawBalloon(x, y, color) {
+        ctx.strokeStyle = "rgba(120,120,160,0.5)"; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(x, y + 16); ctx.lineTo(x - 3, y + 58); ctx.stroke();
+        ctx.fillStyle = color;
+        ctx.beginPath(); ctx.ellipse(x, y, 13, 16, 0, 0, 7); ctx.fill();
+        ctx.fillStyle = "rgba(255,255,255,0.5)";
+        ctx.beginPath(); ctx.ellipse(x - 4, y - 6, 3, 5, 0.3, 0, 7); ctx.fill();
+      }
+
+      function drawLevel2Decor() {
+        drawBunting();
+        const colors = ["#FF6FA5", "#FFD23F", "#6FD8FF", "#FF9ECF", "#B388FF"];
+        for (let i = 0; i < 7; i++) {
+          const bx = (((i * 260 - camera.x * 0.3) % (W + 180)) + (W + 180)) % (W + 180) - 90;
+          const by = 130 + (i % 3) * 36 + Math.sin(time / 40 + i * 1.5) * 16;
+          drawBalloon(bx, by, colors[i % colors.length]);
+        }
+      }
+
+      function drawMoon() {
+        ctx.save();
+        ctx.fillStyle = "#FFF7DA";
+        ctx.beginPath(); ctx.arc(W - 110, 90, 38, 0, 7); ctx.fill();
+        ctx.fillStyle = "rgba(220,200,150,0.4)";
+        ctx.beginPath(); ctx.arc(W - 122, 80, 7, 0, 7); ctx.fill();
+        ctx.beginPath(); ctx.arc(W - 98, 100, 5, 0, 7); ctx.fill();
+        ctx.restore();
+      }
+
+      function drawFirefly(x, y, seed) {
+        const a = 0.4 + 0.6 * Math.abs(Math.sin(time / 18 + seed));
+        ctx.globalAlpha = a;
+        ctx.fillStyle = "#FFE98A";
+        ctx.beginPath(); ctx.arc(x, y, 2.6, 0, 7); ctx.fill();
+        ctx.globalAlpha = a * 0.3;
+        ctx.beginPath(); ctx.arc(x, y, 6, 0, 7); ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+
+      function drawLevel3Decor() {
+        drawMoon();
+        for (let i = 0; i < 16; i++) {
+          const fx = (((i * 180 + Math.sin(time / 50 + i) * 30 - camera.x * 0.6) % (W + 160)) + (W + 160)) % (W + 160) - 80;
+          const fy = 200 + (i * 53) % 220 + Math.cos(time / 35 + i) * 14;
+          drawFirefly(fx, fy, i * 3.1);
+        }
+        // occasional shooting star
+        const cyc = time % 260;
+        if (cyc < 40) {
+          const t = cyc / 40;
+          const sx = W * 0.15 + t * W * 0.7, sy = 40 + t * 120;
+          ctx.save();
+          ctx.globalAlpha = 1 - t;
+          ctx.strokeStyle = "#FFFDF0";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(sx, sy); ctx.lineTo(sx - 26, sy - 13);
+          ctx.stroke();
+          ctx.fillStyle = "#fff";
+          ctx.beginPath(); ctx.arc(sx, sy, 2.4, 0, 7); ctx.fill();
+          ctx.restore();
+        }
+      }
+
+      function drawDecor() {
+        const idx = state.levelIndex;
+        if (idx === 0) drawLevel1Decor();
+        else if (idx === 1) drawLevel2Decor();
+        else drawLevel3Decor();
+      }
+
+      function drawGround() {
+        const th = level.theme;
+        for (const s of level.segments) {
+          const x1 = s.x1 - camera.x, x2 = s.x2 - camera.x;
+          if (x2 < -20 || x1 > W + 20) continue;
+          ctx.fillStyle = th.ground;
+          ctx.fillRect(x1, GROUND_Y, x2 - x1, H - GROUND_Y);
+          ctx.fillStyle = th.groundTop;
+          ctx.fillRect(x1, GROUND_Y, x2 - x1, 14);
+          // little scallops
+          ctx.fillStyle = th.accent;
+          for (let x = x1 + 10; x < x2; x += 34) {
+            ctx.beginPath();
+            ctx.arc(x, GROUND_Y + 14, 6, 0, Math.PI);
+            ctx.fill();
+          }
+        }
+      }
+
+      function drawPlatforms() {
+        for (const p of level.platforms) {
+          const x = p.x - camera.x;
+          if (x + p.w < -20 || x > W + 20) continue;
+          ctx.fillStyle = "#FFFFFF";
+          roundRect(x, p.y, p.w, p.h, 8);
+          ctx.fill();
+          ctx.fillStyle = level.theme.accent;
+          roundRect(x, p.y, p.w, 5, 4);
+          ctx.fill();
+        }
+      }
+
+      function roundRect(x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+      }
+
+      function drawHeartShape(cx, cy, r) {
+        ctx.beginPath();
+        const topY = cy - r * 0.4;
+        ctx.moveTo(cx, cy + r);
+        ctx.bezierCurveTo(cx - r * 1.4, cy - r * 0.2, cx - r * 0.5, topY - r, cx, topY);
+        ctx.bezierCurveTo(cx + r * 0.5, topY - r, cx + r * 1.4, cy - r * 0.2, cx, cy + r);
+        ctx.closePath();
+      }
+
+      function drawCupcake(cx, cy, s) {
+        // wrapper
+        ctx.fillStyle = "#FF9ECF";
+        ctx.beginPath();
+        ctx.moveTo(cx - s * 0.7, cy + s * 0.2);
+        ctx.lineTo(cx + s * 0.7, cy + s * 0.2);
+        ctx.lineTo(cx + s * 0.5, cy + s * 0.9);
+        ctx.lineTo(cx - s * 0.5, cy + s * 0.9);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = "#fff"; ctx.lineWidth = 1;
+        for (let i = -2; i <= 2; i++) { ctx.beginPath(); ctx.moveTo(cx + i * s * 0.22, cy + s * 0.2); ctx.lineTo(cx + i * s * 0.18, cy + s * 0.88); ctx.stroke(); }
+        // frosting swirl
+        ctx.fillStyle = "#FFFDF5";
+        ctx.beginPath();
+        ctx.arc(cx, cy - s * 0.05, s * 0.62, 0, 7);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(cx, cy - s * 0.45, s * 0.4, 0, 7);
+        ctx.fill();
+        // cherry
+        ctx.fillStyle = "#E14F86";
+        ctx.beginPath(); ctx.arc(cx, cy - s * 0.75, s * 0.16, 0, 7); ctx.fill();
+      }
+
+      function drawLetter(cx, cy, s) {
+        ctx.fillStyle = "#FFF8EC";
+        roundRect(cx - s * 0.85, cy - s * 0.6, s * 1.7, s * 1.2, 3);
+        ctx.fill();
+        ctx.strokeStyle = "#FF6FA5"; ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(cx - s * 0.85, cy - s * 0.6);
+        ctx.lineTo(cx, cy + s * 0.05);
+        ctx.lineTo(cx + s * 0.85, cy - s * 0.6);
+        ctx.stroke();
+        ctx.strokeRect(cx - s * 0.85, cy - s * 0.6, s * 1.7, s * 1.2);
+        ctx.fillStyle = "#FF6FA5";
+        drawHeartShape(cx, cy + s * 0.12, s * 0.22);
+        ctx.fill();
+      }
+
+      function drawStar(cx, cy, r) {
+        ctx.beginPath();
+        for (let i = 0; i < 10; i++) {
+          const ang = -Math.PI / 2 + i * Math.PI / 5;
+          const rad = i % 2 === 0 ? r : r * 0.42;
+          const px = cx + Math.cos(ang) * rad, py = cy + Math.sin(ang) * rad;
+          if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+      }
+
+      function drawCollectibles() {
+        for (const h of level.hearts) {
+          if (h.got) continue;
+          const x = h.x - camera.x, y = h.y + Math.sin(time / 15 + h.x) * 4;
+          if (x < -30 || x > W + 30) continue;
+          if (h.type === 'cupcake') {
+            drawCupcake(x, y, 14);
+          } else if (h.type === 'letter') {
+            drawLetter(x, y, 13);
+          } else if (h.type === 'star') {
+            ctx.fillStyle = "#FFD23F";
+            drawStar(x, y, 13);
+            ctx.fill();
+            ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.2; ctx.stroke();
+          } else {
+            ctx.fillStyle = "#FF6FA5";
+            drawHeartShape(x, y, h.r);
+            ctx.fill();
+            ctx.strokeStyle = "#fff";
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+          }
+        }
+      }
+
+      function drawBubble() {
+        if (bubble.timer <= 0) return;
+        const x = bubble.x - camera.x;
+        const y = bubble.y;
+        if (x < -150 || x > W + 150) return;
+        ctx.save();
+        const alpha = Math.min(1, bubble.timer / 20);
+        ctx.globalAlpha = alpha;
+        ctx.font = "600 13px Fredoka, sans-serif";
+        const padX = 10, padY = 7;
+        const tw = ctx.measureText(bubble.text).width;
+        const bw = tw + padX * 2, bh = 26;
+        let bx = x - bw / 2, by = y - bh - 14;
+        bx = Math.max(6, Math.min(W - bw - 6, bx));
+        ctx.fillStyle = "rgba(255,255,255,0.95)";
+        ctx.strokeStyle = "rgba(45,27,78,0.25)";
+        ctx.lineWidth = 1.2;
+        roundRect(bx, by, bw, bh, 12);
+        ctx.fill(); ctx.stroke();
+        // tail
+        ctx.beginPath();
+        ctx.moveTo(x - 6, by + bh);
+        ctx.lineTo(x + 6, by + bh);
+        ctx.lineTo(x, by + bh + 8);
+        ctx.closePath();
+        ctx.fillStyle = "rgba(255,255,255,0.95)";
+        ctx.fill();
+        ctx.fillStyle = "#2D1B4E";
+        ctx.textBaseline = "middle";
+        ctx.fillText(bubble.text, bx + padX, by + bh / 2 + 1);
+        ctx.restore();
+      }
+
+      function drawObstacles() {
+        const tints = [
+          { body: "#8FA6C9", inner: "#fff" },
+          { body: "#9FA8DA", inner: "#fff" },
+          { body: "#6E5B9E", inner: "#cfc1ef" }
+        ];
+        const tint = tints[state.levelIndex] || tints[0];
+        for (const o of level.obstacles) {
+          const x = o.x - camera.x;
+          if (x < -60 || x > W + 60) continue;
+          ctx.save();
+          ctx.translate(x, o.y);
+          ctx.fillStyle = tint.body;
+          drawPuff(0, 0, 18);
+          ctx.fillStyle = tint.inner;
+          drawPuff(0, -2, 16);
+          // grumpy face
+          ctx.fillStyle = "#3a3a5a";
+          ctx.fillRect(-12, -2, 5, 5);
+          ctx.fillRect(7, -2, 5, 5);
+          ctx.strokeStyle = "#3a3a5a";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(-14, -8); ctx.lineTo(-6, -4);
+          ctx.moveTo(14, -8); ctx.lineTo(6, -4);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(0, 8, 6, 0.2 * Math.PI, 0.8 * Math.PI);
+          ctx.stroke();
+          ctx.restore();
+        }
+      }
+
+      function drawGoal() {
+        const x = level.goal.x - camera.x;
+        if (x < -60 || x > W + 60) return;
+        // pole
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(x - 2, GROUND_Y - 150, 4, 150);
+        // flag
+        ctx.fillStyle = level.theme.accent;
+        ctx.beginPath();
+        ctx.moveTo(x + 2, GROUND_Y - 150);
+        ctx.lineTo(x + 50, GROUND_Y - 132);
+        ctx.lineTo(x + 2, GROUND_Y - 114);
+        ctx.closePath();
+        ctx.fill();
+        // heart on flag
+        ctx.fillStyle = "#fff";
+        drawHeartShape(x + 22, GROUND_Y - 133, 7);
+        ctx.fill();
+      }
+
+      function drawPlayer() {
+        const x = player.x - camera.x;
+        const y = player.y;
+        const bob = player.onGround ? Math.sin(player.walk / 5) * 3 : 0;
+        ctx.save();
+        ctx.translate(x + player.w / 2, 0);
+        if (player.invul > 0 && Math.floor(time / 4) % 2 === 0) { ctx.globalAlpha = 0.4; }
+        ctx.scale(player.facing, 1);
+
+        // shadow
+        ctx.globalAlpha *= 0.25;
+        ctx.fillStyle = "#000";
+        ctx.beginPath();
+        ctx.ellipse(0, GROUND_Y - player.y + player.h - 2, 16, 5, 0, 0, 7);
+        ctx.fill();
+        ctx.globalAlpha = player.invul > 0 && Math.floor(time / 4) % 2 === 0 ? 0.4 : 1;
+
+        // legs
+        ctx.fillStyle = "#3DAEE0";
+        const legSwing = player.onGround && Math.abs(player.vx) > 0 ? Math.sin(player.walk / 4) * 8 : 0;
+        ctx.fillRect(-10, y + 40 + bob, 7, 16 + legSwing * 0.2);
+        ctx.fillRect(4, y + 40 + bob, 7, 16 - legSwing * 0.2);
+
+        // body
+        ctx.fillStyle = "#FF6FA5";
+        roundRect(-15, y + 14 + bob, 30, 30, 10);
+        ctx.fill();
+
+        // arms
+        ctx.fillStyle = "#FF6FA5";
+        ctx.beginPath(); ctx.arc(-15, y + 24 + bob, 6, 0, 7); ctx.fill();
+        ctx.beginPath(); ctx.arc(15, y + 24 + bob, 6, 0, 7); ctx.fill();
+
+        // head
+        const headR = 16;
+        const headY = y + bob;
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(0, headY, headR, 0, 7);
+        ctx.closePath();
+        if (state.faceImg) {
+          ctx.clip();
+          const img = state.faceImg;
+          const s = Math.max((headR * 2) / img.width, (headR * 2) / img.height);
+          const iw = img.width * s, ih = img.height * s;
+          // unscale the facing flip just for the image so the photo isn't mirrored oddly
+          ctx.scale(player.facing, 1);
+          ctx.drawImage(img, -iw / 2, headY - ih / 2, iw, ih);
+        } else {
+          ctx.fillStyle = "#FFD9A8";
+          ctx.fill();
+          ctx.fillStyle = "#2D1B4E";
+          ctx.beginPath(); ctx.arc(-5, headY - 2, 2, 0, 7); ctx.fill();
+          ctx.beginPath(); ctx.arc(5, headY - 2, 2, 0, 7); ctx.fill();
+          ctx.beginPath();
+          ctx.arc(0, headY + 3, 6, 0.15 * Math.PI, 0.85 * Math.PI);
+          ctx.lineWidth = 2; ctx.strokeStyle = "#2D1B4E"; ctx.stroke();
+        }
+        ctx.restore();
+
+        // party hat
+        ctx.fillStyle = level.theme.accent;
+        ctx.beginPath();
+        ctx.moveTo(-10, headY - headR + 4);
+        ctx.lineTo(10, headY - headR + 4);
+        ctx.lineTo(0, headY - headR - 16);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = "#fff";
+        ctx.beginPath(); ctx.arc(0, headY - headR - 16, 3, 0, 7); ctx.fill();
+
+        ctx.restore();
+      }
+
+      /* ---------- FINALE ILLUSTRATION (separate canvas) ---------- */
+      function fRoundRect(fctx, x, y, w, h, r) {
+        fctx.beginPath();
+        fctx.moveTo(x + r, y);
+        fctx.arcTo(x + w, y, x + w, y + h, r);
+        fctx.arcTo(x + w, y + h, x, y + h, r);
+        fctx.arcTo(x, y + h, x, y, r);
+        fctx.arcTo(x, y, x + w, y, r);
+        fctx.closePath();
+      }
+
+      function fDrawFlower(fctx, x, y, scale) {
+        fctx.save();
+        fctx.translate(x, y);
+        fctx.scale(scale, scale);
+        fctx.strokeStyle = "#6BCB77";
+        fctx.lineWidth = 2.5;
+        fctx.beginPath(); fctx.moveTo(0, 0); fctx.lineTo(0, 20); fctx.stroke();
+        const petalColors = ["#FF6FA5", "#FFD23F", "#FF9ECF"];
+        fctx.fillStyle = petalColors[0];
+        for (let i = 0; i < 6; i++) {
+          const ang = i * (Math.PI * 2 / 6);
+          fctx.beginPath();
+          fctx.ellipse(Math.cos(ang) * 7, Math.sin(ang) * 7, 5.5, 3.6, ang, 0, 7);
+          fctx.fill();
+        }
+        fctx.fillStyle = "#FFD23F";
+        fctx.beginPath(); fctx.arc(0, 0, 4, 0, 7); fctx.fill();
+        fctx.restore();
+      }
+
+      function fDrawPerson(fctx, cx, groundY, faceImg, isGirl, armToward) {
+        const bodyColor = isGirl ? "#FF9ECF" : "#6FD8FF";
+        const skinDefault = "#FFD9A8";
+        const headR = 17;
+        const headY = groundY - 58;
+        const bodyTop = headY + headR - 2;
+        const bodyH = isGirl ? 42 : 36;
+
+        // legs
+        fctx.fillStyle = isGirl ? "#FFD9A8" : "#3DAEE0";
+        fctx.fillRect(cx - 9, bodyTop + bodyH - 4, 7, 18);
+        fctx.fillRect(cx + 2, bodyTop + bodyH - 4, 7, 18);
+
+        // body: dress (triangle) for girl, capsule shirt for boy
+        if (isGirl) {
+          fctx.fillStyle = bodyColor;
+          fctx.beginPath();
+          fctx.moveTo(cx - 9, bodyTop);
+          fctx.lineTo(cx + 9, bodyTop);
+          fctx.lineTo(cx + 17, bodyTop + bodyH);
+          fctx.lineTo(cx - 17, bodyTop + bodyH);
+          fctx.closePath();
+          fctx.fill();
+        } else {
+          fctx.fillStyle = bodyColor;
+          fRoundRect(fctx, cx - 14, bodyTop, 28, bodyH, 9);
+          fctx.fill();
+        }
+
+        // far arm (simple, resting)
+        fctx.fillStyle = isGirl ? "#FFD9A8" : bodyColor;
+        const farArmX = armToward > 0 ? cx - 13 : cx + 13;
+        fctx.beginPath(); fctx.arc(farArmX, bodyTop + 12, 5.5, 0, 7); fctx.fill();
+
+        // head + hair (drawn before near arm so arm overlaps slightly in front)
+        fctx.save();
+        fctx.beginPath();
+        fctx.arc(cx, headY, headR, 0, 7);
+        fctx.closePath();
+        if (faceImg) {
+          fctx.save();
+          fctx.clip();
+          const s = Math.max((headR * 2) / faceImg.width, (headR * 2) / faceImg.height);
+          const iw = faceImg.width * s, ih = faceImg.height * s;
+          fctx.drawImage(faceImg, cx - iw / 2, headY - ih / 2, iw, ih);
+          fctx.restore();
+        } else {
+          fctx.fillStyle = skinDefault;
+          fctx.fill();
+          fctx.fillStyle = "#2D1B4E";
+          fctx.beginPath(); fctx.arc(cx - 5, headY - 2, 2, 0, 7); fctx.fill();
+          fctx.beginPath(); fctx.arc(cx + 5, headY - 2, 2, 0, 7); fctx.fill();
+          fctx.beginPath();
+          fctx.arc(cx, headY + 3, 6, 0.15 * Math.PI, 0.85 * Math.PI);
+          fctx.lineWidth = 2; fctx.strokeStyle = "#2D1B4E"; fctx.stroke();
+        }
+        fctx.restore();
+
+        if (isGirl) {
+          fctx.fillStyle = "#5A3825";
+          fctx.beginPath();
+          fctx.arc(cx, headY - 4, headR + 2, Math.PI * 1.05, Math.PI * 1.95);
+          fctx.fill();
+          fctx.beginPath(); fctx.ellipse(cx - headR - 1, headY + 8, 4, 10, 0.2, 0, 7); fctx.fill();
+          fctx.beginPath(); fctx.ellipse(cx + headR + 1, headY + 8, 4, 10, -0.2, 0, 7); fctx.fill();
+          // flower crown accent
+          fctx.fillStyle = "#FF6FA5";
+          for (let i = -1; i <= 1; i++) { fctx.beginPath(); fctx.arc(cx + i * 9, headY - headR + 2, 2.6, 0, 7); fctx.fill(); }
+        }
+
+        // near arm extended toward the other person, holding/receiving the flower
+        const handX = armToward > 0 ? cx + 30 : cx - 30;
+        const handY = bodyTop + 16;
+        fctx.strokeStyle = isGirl ? "#FFD9A8" : bodyColor;
+        fctx.lineWidth = 7;
+        fctx.lineCap = "round";
+        fctx.beginPath();
+        fctx.moveTo(armToward > 0 ? cx + 12 : cx - 12, bodyTop + 10);
+        fctx.lineTo(handX, handY);
+        fctx.stroke();
+        fctx.fillStyle = isGirl ? "#FFD9A8" : "#FFD9A8";
+        fctx.beginPath(); fctx.arc(handX, handY, 5, 0, 7); fctx.fill();
+
+        return { handX, handY };
+      }
+
+      function drawFinaleScene() {
+        const canvasEl = document.getElementById('finaleCanvas');
+        const fctx = canvasEl.getContext('2d');
+        const FW = canvasEl.width, FH = canvasEl.height;
+        fctx.clearRect(0, 0, FW, FH);
+
+        // sky
+        const g = fctx.createLinearGradient(0, 0, 0, FH);
+        g.addColorStop(0, "#FFD9EC"); g.addColorStop(1, "#FFF3D6");
+        fctx.fillStyle = g;
+        fctx.fillRect(0, 0, FW, FH);
+
+        // sun
+        fctx.fillStyle = "rgba(255,210,90,0.55)";
+        fctx.beginPath(); fctx.arc(FW - 44, 38, 30, 0, 7); fctx.fill();
+
+        // floating hearts/confetti
+        const conf = ["#FF6FA5", "#FFD23F", "#6FD8FF", "#fff"];
+        for (let i = 0; i < 16; i++) {
+          fctx.fillStyle = conf[i % conf.length];
+          const cx2 = (i * 53) % FW, cy2 = 14 + (i * 37) % 70;
+          fctx.save(); fctx.translate(cx2, cy2); fctx.rotate(i);
+          fctx.fillRect(-2, -2, 4, 4);
+          fctx.restore();
+        }
+
+        // ground
+        const groundY = FH - 28;
+        fctx.fillStyle = "#6BCB77";
+        fctx.fillRect(0, groundY, FW, FH - groundY);
+        fctx.fillStyle = "#7fd99a";
+        for (let x = 4; x < FW; x += 22) {
+          fctx.beginPath(); fctx.arc(x, groundY, 6, Math.PI, 0); fctx.fill();
+        }
+        // little flowers on ground
+        const fcols = [["#fff", "#FFD23F"], ["#FFD9F0", "#FF6FA5"]];
+        for (let i = 0; i < 6; i++) {
+          const fx = 18 + i * 52, fy = groundY + 14;
+          const c = fcols[i % 2];
+          for (let p = 0; p < 5; p++) {
+            const ang = p * (Math.PI * 2 / 5);
+            fctx.fillStyle = c[0];
+            fctx.beginPath(); fctx.ellipse(fx + Math.cos(ang) * 3, fy + Math.sin(ang) * 3, 2.6, 1.8, ang, 0, 7); fctx.fill();
+          }
+          fctx.fillStyle = c[1];
+          fctx.beginPath(); fctx.arc(fx, fy, 1.8, 0, 7); fctx.fill();
+        }
+
+        const girlPos = fDrawPerson(fctx, FW * 0.32, groundY, state.herFaceImg, true, 1);
+        const boyPos = fDrawPerson(fctx, FW * 0.68, groundY, state.faceImg, false, -1);
+
+        // flower passing between their hands
+        const midX = (girlPos.handX + boyPos.handX) / 2;
+        const midY = (girlPos.handY + boyPos.handY) / 2 - 6;
+        fDrawFlower(fctx, midX, midY, 1.1);
+
+        // little heart floating above the scene
+        fctx.fillStyle = "#FF6FA5";
+        fctx.beginPath();
+        const hx = midX, hy = midY - 38, hr = 7;
+        fctx.moveTo(hx, hy + hr);
+        fctx.bezierCurveTo(hx - hr * 1.4, hy - hr * 0.2, hx - hr * 0.5, hy - hr * 1.4, hx, hy - hr * 0.4);
+        fctx.bezierCurveTo(hx + hr * 0.5, hy - hr * 1.4, hx + hr * 1.4, hy - hr * 0.2, hx, hy + hr);
+        fctx.closePath();
+      }
+
+      function render() {
+        if (state.screen !== 'play') { return; }
+        drawBackground();
+        drawDecor();
+        drawGround();
+        drawPlatforms();
+        drawGoal();
+        drawCollectibles();
+        drawObstacles();
+        drawPlayer();
+        drawBubble();
+      }
+
+      function loop() {
+        update();
+        render();
+        requestAnimationFrame(loop);
+      }
+      requestAnimationFrame(loop);
+
+    })();
+  </script>
+</body>
+
+</html>
