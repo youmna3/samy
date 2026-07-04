@@ -31,33 +31,38 @@
       margin: 0;
       padding: 0;
       height: 100%;
+      height: 100dvh;
       background: linear-gradient(160deg, #FFE3EE, #FFF3D6 55%, #E3F7FF);
       font-family: 'Fredoka', sans-serif;
       color: var(--plum);
       overflow: hidden;
       -webkit-tap-highlight-color: transparent;
+      overscroll-behavior: none;
     }
 
     #app {
       position: relative;
       width: 100%;
-      max-width: 960px;
+      height: 100%;
+      height: 100dvh;
       margin: 0 auto;
-      height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      padding: 8px;
+      padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
     }
 
     #stage {
       position: relative;
-      width: 100%;
       aspect-ratio: 960/540;
-      max-height: 88vh;
-      border-radius: 22px;
+      width: min(100%, calc((100dvh - 16px) * 960 / 540));
+      max-width: 960px;
+      max-height: 100%;
+      border-radius: 18px;
       overflow: hidden;
-      box-shadow: 0 18px 40px var(--shadow), 0 0 0 6px var(--white) inset;
+      box-shadow: 0 18px 40px var(--shadow), 0 0 0 5px var(--white) inset;
       background: #bfeaff;
     }
 
@@ -360,16 +365,6 @@
       border-color: var(--sky);
     }
 
-    footer.credit {
-      position: absolute;
-      bottom: 6px;
-      width: 100%;
-      text-align: center;
-      font-size: 10px;
-      color: var(--plum);
-      opacity: 0.4;
-    }
-
     @media (max-width:600px) {
       #touch button {
         width: 50px;
@@ -377,10 +372,61 @@
         font-size: 20px;
       }
     }
+
+    @media (max-height:480px) {
+      .overlay {
+        gap: 8px;
+        padding: 3% 4%;
+      }
+
+      .avatar-wrap {
+        width: clamp(60px, 14vw, 84px);
+        height: clamp(60px, 14vw, 84px);
+        border-width: 4px;
+      }
+
+      h1.title {
+        font-size: clamp(18px, 5vw, 30px);
+      }
+
+      .hint {
+        font-size: 10px;
+      }
+    }
+
+    .overlay {
+      overflow-y: auto;
+    }
+
+    #rotateHint {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--plum);
+      color: #fff;
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 600;
+      font-size: 12px;
+      padding: 6px 10px;
+      z-index: 50;
+      text-align: center;
+    }
+
+    @media (orientation:portrait) and (max-width:700px) {
+      #rotateHint {
+        display: flex;
+      }
+    }
   </style>
 </head>
 
 <body>
+  <div id="rotateHint">📱↻ Turn your phone sideways for the full-size game!</div>
   <div id="app">
     <div id="stage">
       <canvas id="game" width="960" height="540"></canvas>
@@ -403,8 +449,6 @@
       <!-- START SCREEN -->
       <div id="screenStart" class="overlay">
         <h1 class="title">A Birthday Quest 🎂</h1>
-        <p class="sub">Three levels, three reasons to smile: count every thing you love about him, then everything that
-          makes you happy he does, then watch your wishes for "us" come true — ending with a little surprise.</p>
 
         <div class="avatar-row">
           <div class="avatar-col">
@@ -416,69 +460,12 @@
                 <path d="M38 48 Q50 58 62 48" stroke="#2D1B4E" stroke-width="3" fill="none" stroke-linecap="round" />
               </svg>
             </div>
-            <label class="upload-btn" for="photoInput">His photo 📷</label>
+            <label class="upload-btn" for="photoInput">Add your photo 📷</label>
             <input type="file" id="photoInput" accept="image/*">
-          </div>
-          <div class="avatar-col">
-            <div class="avatar-wrap small" id="herAvatarWrap">
-              <svg viewBox="0 0 100 100">
-                <circle cx="50" cy="38" r="22" fill="#FFE3C4" />
-                <circle cx="40" cy="36" r="3" fill="#2D1B4E" />
-                <circle cx="60" cy="36" r="3" fill="#2D1B4E" />
-                <path d="M38 48 Q50 56 62 48" stroke="#2D1B4E" stroke-width="3" fill="none" stroke-linecap="round" />
-                <path d="M28 30 Q50 6 72 30" stroke="#5A3825" stroke-width="10" fill="none" />
-              </svg>
-            </div>
-            <label class="upload-btn" for="herPhotoInput">Your photo (optional)</label>
-            <input type="file" id="herPhotoInput" accept="image/*">
           </div>
         </div>
 
-        <input type="text" id="nameInput" placeholder="His name (e.g. Samy)" maxlength="18">
-
-        <details id="customizePanel">
-          <summary>💌 Personalize what each level reveals (optional — sweet defaults included)</summary>
-          <div class="field-block">
-            <label>Level 1 — Things I love about You (one per line)</label>
-            <textarea id="lines1">Your Smile
-              The way you make even boring days fun
-              How endlessly kind you are
-              How safe and at home I feel with you
-              The way your eyes light up about things you love
-              How you always show up for me
-              The way you talk about your passions
-              How you look at me when you think I'm not noticing
-              our calls that last for hours
-              How you appreciate everything I do for you </textarea>
-          </div>
-          <div class="field-block">
-            <label>Level 2 — Things that make me happy you do (one per line)</label>
-            <textarea id="lines2">Your Morning Text
-              You always check in on me
-              You remember the little things I say
-              You always want me to be happy
-              Your daily updates on how your day is going
-              Your way of making me feel special
-              You laugh at my jokes
-              Your reaction to my food
-              How you choose the perfect gift for me
-              Your morning calls</textarea>
-          </div>
-          <div class="field-block">
-            <label>Level 3 — Wishes for "us" (one per line)</label>
-            <textarea id="lines3">To stay best friends, not just partners
-              Growing old together
-              Traveling the world side by side
-              Building a home full of love
-              Raise our children with love and care
-              Late night talks under the stars
-              Adventures we haven't even dreamed of yet
-              Being your partner in everything
-              Be together through thick and thin
-              Always talk, fix things, and never let distance win
-              we become better people together</textarea>
-          </div>
-        </details>
+        <input type="text" id="nameInput" placeholder="Your name" maxlength="18">
 
         <button class="big-btn" id="startBtn">Start the Quest →</button>
         <p class="hint">Arrow keys / A & D to move, Space to jump &nbsp;•&nbsp; on mobile, use the on-screen buttons</p>
@@ -513,13 +500,17 @@
         </div>
       </div>
 
-      <footer class="credit">made with love, just for you 💌</footer>
     </div>
   </div>
 
   <script>
     (function () {
       "use strict";
+
+      /* ---------- rotate hint dismiss ---------- */
+      document.getElementById('rotateHint').addEventListener('click', function () {
+        this.style.display = 'none';
+      });
 
       const canvas = document.getElementById('game');
       const ctx = canvas.getContext('2d');
@@ -531,21 +522,21 @@
 
       /* ---------- palette per level ---------- */
       const THEMES = [
-        { name: "Things I Love About You", subtitle: "Meadow of Affection", skyTop: "#9be8ff", skyBottom: "#d6f7ff", hill: "#7fd99a", hill2: "#6BCB77", ground: "#8a5a3b", groundTop: "#6BCB77", accent: "#FFD23F", obstacleName: "Sir Pouts-a-Lot" },
-        { name: "Things That Make Me Happy", subtitle: "Sugar, Streamers & Slapstick", skyTop: "#6fc7ff", skyBottom: "#bfe9ff", hill: "#9fdcff", hill2: "#7fc4ee", ground: "#5f7fae", groundTop: "#bfe9ff", accent: "#FF6FA5", obstacleName: "Negative Nancy" },
-        { name: "Wishes For Us", subtitle: "Make a Wish on Us", skyTop: "#241b4e", skyBottom: "#5a3a7a", hill: "#3a2a66", hill2: "#2D1B4E", ground: "#3a2a66", groundTop: "#FFD23F", accent: "#FF6FA5", obstacleName: "Gloomy Drizzle" }
+        { name: "Things I Love About You", subtitle: "Meadow of Affection", skyTop: "#9be8ff", skyBottom: "#d6f7ff", hill: "#7fd99a", hill2: "#6BCB77", ground: "#8a5a3b", groundTop: "#6BCB77", accent: "#FFD23F", obstacleName: "Negative Cloud" },
+        { name: "Things That Make Me Happy", subtitle: "Sugar, Streamers & Slapstick", skyTop: "#6fc7ff", skyBottom: "#bfe9ff", hill: "#9fdcff", hill2: "#7fc4ee", ground: "#5f7fae", groundTop: "#bfe9ff", accent: "#FF6FA5", obstacleName: "Negative Cloud" },
+        { name: "Wishes For Us", subtitle: "Make a Wish on Us", skyTop: "#241b4e", skyBottom: "#5a3a7a", hill: "#3a2a66", hill2: "#2D1B4E", ground: "#3a2a66", groundTop: "#FFD23F", accent: "#FF6FA5", obstacleName: "Gloomy Cloud" }
       ];
 
       /* ---------- funny + romantic flavor text (fallback if user leaves a box empty) ---------- */
       const DEFAULT_LINES = [
-        ["Your laugh that makes everyone else laugh too", "The way you make even boring days fun", "How endlessly kind you are", "Your hugs that fix everything", "The way your eyes light up about things you love"],
-        ["You make me coffee every morning", "You always check in on me", "You remember the little things I say", "You dance with me in the kitchen", "You let me steal your hoodies"],
-        ["Growing old together", "Traveling the world side by side", "Building a home full of love", "Late night talks under the stars", "Forever starts now"]
+        ["Your Smile", "The way you make even boring days fun", "How endlessly kind you are", "How safe and at home I feel with you", "The way your eyes light up about things you love", "How you always show up for me", "The way you talk about your passions", "How you look at me when you think I'm not noticing", "Our calls that last for hours", "How you appreciate everything I do for you"],
+        ["Your Morning Text", "You always check in on me", "You remember the little things I say", "You always want me to be happy", "Your daily updates on how your day is going", "Your way of making me feel special", "How you react to my food", " How you choose the perfect gift for me", "Your plans surprise me"],
+        ["Growing old together", "To stay best friends, not just partners", "Building a home full of love", "Late night talks", "Adventures we haven't even dreamed of yet", "Being your partner in everything", "Be together through thick and thin", "Always talk, fix things, and never let distance win", "we become better people together"]
       ];
       const OBSTACLE_QUIPS = [
-        ["Sir Pouts-a-Lot: 'Hmph. Too much love in here.'", "Sir Pouts-a-Lot: 'Ugh, get a room, you two.'"],
-        ["Negative Nancy: 'Lower the cuteness, please!'", "Negative Nancy: 'My one job is to rain on this.'"],
-        ["Gloomy Drizzle: 'Even I can't dim that sparkle.'", "Gloomy Drizzle: 'Fine, you two ARE cute. Happy?'"]
+        ["Negative Cloud: 'Hmph. Too much love in here.'", "Negative Cloud: 'Ugh, get a room, you two.'"],
+        ["Negative Cloud: 'Lower the cuteness, please!'", "Negative Cloud: 'My one job is to rain on this.'"],
+        ["Negative Cloud: 'Even I can't dim that sparkle.'", "Negative Cloud: 'Fine, you two ARE cute. Happy?'"]
       ];
 
       /* ---------- helper: build a level ---------- */
