@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-  <title>Happy Birthday Samy!</title>
+  <title>Happy Birthday Samsom!</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link
     href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Baloo+2:wght@500;700;800&display=swap"
@@ -541,7 +541,7 @@
                 <path d="M38 48 Q50 58 62 48" stroke="#2D1B4E" stroke-width="3" fill="none" stroke-linecap="round" />
               </svg>
             </div>
-            <label class="upload-btn" for="photoInput">His photo 📷</label>
+            <label class="upload-btn" for="photoInput">Your photo 📷</label>
             <input type="file" id="photoInput" accept="image/*">
           </div>
           <div class="avatar-col">
@@ -554,12 +554,12 @@
                 <path d="M28 30 Q50 6 72 30" stroke="#5A3825" stroke-width="10" fill="none" />
               </svg>
             </div>
-            <label class="upload-btn" for="herPhotoInput">Your photo (optional)</label>
+            <label class="upload-btn" for="herPhotoInput">Her photo (optional)</label>
             <input type="file" id="herPhotoInput" accept="image/*">
           </div>
         </div>
 
-        <div class="birthday-static">Happy Birthday Samy 🎂</div>
+        <div class="birthday-static">Happy Birthday Samsom 🎂</div>
 
         <details id="customizePanel" class="hidden">
           <summary>💌 Personalize what each level reveals (optional — sweet defaults included)</summary>
@@ -656,9 +656,9 @@
 
       /* ---------- palette per level ---------- */
       const THEMES = [
-        { name: "Things I Love About You", subtitle: "Meadow of Affection", skyTop: "#9be8ff", skyBottom: "#d6f7ff", hill: "#7fd99a", hill2: "#6BCB77", ground: "#8a5a3b", groundTop: "#6BCB77", accent: "#FFD23F", obstacleName: "Sir Pouts-a-Lot" },
-        { name: "Things That Make Me Happy", subtitle: "Sugar, Streamers & Slapstick", skyTop: "#6fc7ff", skyBottom: "#bfe9ff", hill: "#9fdcff", hill2: "#7fc4ee", ground: "#5f7fae", groundTop: "#bfe9ff", accent: "#FF6FA5", obstacleName: "Negative Nancy" },
-        { name: "Wishes For Us", subtitle: "Make a Wish on Us", skyTop: "#241b4e", skyBottom: "#5a3a7a", hill: "#3a2a66", hill2: "#2D1B4E", ground: "#3a2a66", groundTop: "#FFD23F", accent: "#FF6FA5", obstacleName: "Gloomy Drizzle" }
+        { name: "Things I Love About You", subtitle: "Meadow of Affection", skyTop: "#9be8ff", skyBottom: "#d6f7ff", hill: "#7fd99a", hill2: "#6BCB77", ground: "#8a5a3b", groundTop: "#6BCB77", accent: "#FFD23F", obstacleName: "Cloud" },
+        { name: "Things That Make Me Happy", subtitle: "Sugar, Streamers & Slapstick", skyTop: "#6fc7ff", skyBottom: "#bfe9ff", hill: "#9fdcff", hill2: "#7fc4ee", ground: "#5f7fae", groundTop: "#bfe9ff", accent: "#FF6FA5", obstacleName: "Cloud" },
+        { name: "Wishes For Us", subtitle: "Make a Wish on Us", skyTop: "#241b4e", skyBottom: "#5a3a7a", hill: "#3a2a66", hill2: "#2D1B4E", ground: "#3a2a66", groundTop: "#FFD23F", accent: "#FF6FA5", obstacleName: "Cloud" }
       ];
 
       /* ---------- funny + romantic flavor text (fallback if user leaves a box empty) ---------- */
@@ -668,9 +668,9 @@
         ["Growing old together", "Traveling the world side by side", "Building a home full of love", "Late night talks under the stars", "Forever starts now"]
       ];
       const OBSTACLE_QUIPS = [
-        ["Sir Pouts-a-Lot: 'Hmph. Too much love in here.'", "Sir Pouts-a-Lot: 'Ugh, get a room, you two.'"],
-        ["Negative Nancy: 'Lower the cuteness, please!'", "Negative Nancy: 'My one job is to rain on this.'"],
-        ["Gloomy Drizzle: 'Even I can't dim that sparkle.'", "Gloomy Drizzle: 'Fine, you two ARE cute. Happy?'"]
+        ["Cloud: 'Hmph. Too much love in here.'", "Cloud: 'Ugh, get a room, you two.'"],
+        ["Cloud: 'Lower the cuteness, please!'", "Cloud: 'My one job is to rain on this.'"],
+        ["Cloud: 'Even I can't dim that sparkle.'", "Cloud: 'Fine, you two ARE cute. Happy?'"]
       ];
 
       /* ---------- helper: build a level ---------- */
@@ -712,7 +712,7 @@
         levelIndex: 0,
         faceImg: null,
         herFaceImg: null,
-        playerName: 'Samy',
+        playerName: 'Samsom',
         totalHeartsCollected: 0,
         totalHeartsAll: 0,
         lines: [null, null, null],
@@ -852,7 +852,7 @@
       }
 
       document.getElementById('startBtn').addEventListener('click', () => {
-        state.playerName = 'Samy';
+        state.playerName = 'Samsom';
         state.totalHeartsCollected = 0;
         state.totalHeartsAll = LEVELS.reduce((s, l) => s + l.hearts.length, 0);
         state.levelIndex = 0;
@@ -885,7 +885,7 @@
       const WIN_MESSAGES = [
         "You beat the meadow, survived the carnival, and out-sparkled the stars. Officially the most lovable person alive — happy birthday!",
         "Every heart, cupcake and wish out there has nothing on the real thing: you. Happy birthday, gorgeous.",
-        "Sir Pouts-a-Lot, Negative Nancy, and Gloomy Drizzle all agree (reluctantly): you're impossible not to adore. Happy birthday!"
+        "Clouds all agree (reluctantly): you're impossible not to adore. Happy birthday!"
       ];
 
       function finishGame() {
